@@ -10,8 +10,14 @@ class RedisClient {
    */
   constructor() {
     this.client = createClient();
-    this.client.on('error', (error) => console.log(error));
     this.isClientConnected = true;
+    this.client.on('error', (err) => {
+	    console.error('Redis client failed to connect:', err.message || err.toString());
+	    this.isClientConnected = false;
+    });
+    this.client.on('connect', () => {
+      this.isClientConnected = true;
+    });
   }
 
   /**
@@ -28,8 +34,7 @@ class RedisClient {
    * @returns {String | Object}
    */
   async get(key) {
-    const getAsync = promisify(this.client.GET).bind(this.client);
-    return getAsync(key)
+    return promisify(this.client.GET).bind(this.client)(key);
   }
 
   /**
@@ -40,8 +45,8 @@ class RedisClient {
    * @returns {Promise<void>}
    */
   async set(key, value, duration) {
-     const setAsync = promisify(this.client.SET).bind(this.client);
-     return setAsync(key, value, 'EX', duration);
+     await promisify(this.client.SETEX)
+     .bind(this.client)(key, duration, value);
   }
 
   /**
@@ -50,8 +55,7 @@ class RedisClient {
    * @returns {Promise<void>}
    */
   async del(key) {
-    const delAsync = promisify(this.client.DEL).bind(this.client);
-    return delAsync(key);
+    await promisify(this.client.DEL).bind(this.client)(key);
   }
 }
 
