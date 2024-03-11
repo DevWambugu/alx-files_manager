@@ -279,7 +279,7 @@ export default class FilesController {
       return;
     }
     if (file.type === VALID_FILE_TYPES.folder) {
-      res.status(400).json({ error: "A folder doesn't have content"});
+      res.status(400).json({ error: "A folder doesn't have content" });
       return;
     }
     let filePath = file.localPath;
