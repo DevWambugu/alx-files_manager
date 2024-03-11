@@ -166,7 +166,7 @@ export default class FilesController {
    */
   static async getIndex(req, res) {
     const { user } = req;
-    const parentId = req.query.parentId || ROOT_FOLDER_ID.toString();
+    const parentId = (req.query.parentId || ROOT_FOLDER_ID).toString();
     const page = /\d+/.test((req.query.page || '').toString())
       ? Number.parseInt(req.query.page, 10)
       : 0;
@@ -279,7 +279,7 @@ export default class FilesController {
       return;
     }
     if (file.type === VALID_FILE_TYPES.folder) {
-      res.status(400).json({ error: 'A folder doesn\'t have content' });
+      res.status(400).json({ error: "A folder doesn't have content"});
       return;
     }
     let filePath = file.localPath;
